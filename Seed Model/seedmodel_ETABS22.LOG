@@ -1,0 +1,207 @@
+
+
+ ETABS Nonlinear 64-bit 22.4.0 Build 3843 (Analysis Build 9980/64)
+ File: C:\Users\rwang\PythonDe...odel Generator\Seed Model\seedmodel_ETABS22.LOG
+
+
+
+
+ B E G I N   A N A L Y S I S                                2025/08/13  11:00:17
+
+
+ RUNNING ANALYSIS AS A SEPARATE PROCESS
+ USING THE STANDARD SOLVER (PROVIDES COMPLETE INSTABILITY INFORMATION)
+
+ NUMBER OF JOINTS                          =        3328
+    WITH RESTRAINTS                        =         104
+    WITH MASS                              =         104
+ NUMBER OF FRAME/TENDON ELEMENTS           =        6992
+ NUMBER OF SHELL ELEMENTS                  =        2640
+ NUMBER OF CONSTRAINTS/WELDS               =          16
+ NUMBER OF LOAD PATTERNS                   =          21
+ NUMBER OF ACCELERATION LOADS              =          12
+ NUMBER OF LOAD CASES                      =           5
+ NUMBER OF MASS SOURCES                    =           1
+
+ UNITS (FORCE, LENGTH, TEMPERATURE, TIME)  = kip, in, °F, sec
+ GRAVITATIONAL ACCELERATION                =  386.088583
+
+ ADDRESSABLE PHYSICAL MEMORY (RAM)         =      31.692 GB
+
+ PARALLELIZATION OF ANALYSIS OPERATIONS:
+  (Env. variable SAPFIRE_NUM_THREADS not set)
+ NUMBER OF THREADS: STATE (AUTOMATIC)      =          16
+ NUMBER OF THREADS: STIFFNESS (AUTOMATIC)  =          16
+ NUMBER OF THREADS: EVENT (AUTOMATIC)      =          16
+ NUMBER OF THREADS: MOVE (AUTOMATIC)       =          16
+ NUMBER OF THREADS: RESPONSE (AUTOMATIC)   =          16
+ NUMBER OF THREADS: SOLVE (AUTOMATIC)      =          16
+ NUMBER OF THREADS: FORM (AUTOMATIC)       =          16
+
+
+ N O N L I N E A R   S T A T I C   A N A L Y S I S                      11:00:17
+
+ CASE: ~P-DELTA
+
+ STARTING FROM ZERO (UNSTRESSED) INITIAL CONDITIONS
+
+ LOAD CONTROL TYPE                         =       FORCE
+ TYPE OF GEOMETRIC NONLINEARITY            =     P-DELTA
+ USE EVENT STEPPING                        =         YES
+ USE ITERATION                             =         YES
+ USE LINE SEARCH                           =          NO
+ EVENT LUMPING TOLERANCE                   =    0.010000
+ FORCE CONVERGENCE TOLERANCE (RELATIVE)    =    0.000100
+
+
+ E L E M E N T   F O R M A T I O N                                      11:00:17
+
+
+ NUMBER OF COUPLED CONSTRAINT EQUATIONS    =           0
+
+ Negative iterations are Constant-Stiffness
+ Positive iterations are Newton-Raphson
+
+  Saved    Null   Total  Iteration   Relative  Curr Step   Curr Sum    Max Sum
+  Steps   Steps   Steps  this Step  Unbalance       Size   of Steps   of Steps
+ (    1      50     200     -10/40   1.000000   1.000000   1.000000   1.000000)
+
+      0       0       1         -1  20.140004   1.000000    .000000    .000000
+      0       0       1         -2   2.565892   1.000000    .000000    .000000
+      0       0       1  Conv   -3   0.419029   1.000000   1.000000   1.000000
+
+ ----------------------------------------
+ BASIC STABILITY CHECK FOR FORCE-CONTROLLED NONLINEAR STATIC LOAD CASES:
+    NUMBER OF NEGATIVE STIFFNESS EIGENVALUES SHOULD BE ZERO FOR STABILITY.
+    (NOTE: FURTHER CHECKS SHOULD BE CONSIDERED AS DEEMED NECESSARY)
+
+    NUMBER FOUND AT FINAL CONVERGED STATE  =           0,  OK.
+ ----------------------------------------
+
+ NUMBER OF STIFFNESS FORMATIONS/SOLUTIONS  =           2
+
+ TIME FOR INITIALIZING ANALYSIS            =        0.38
+ TIME FOR CONTROLLING ANALYSIS             =        1.28
+ TIME FOR UPDATING LOADS AND STATE         =        0.18
+ TIME FOR FORMING STIFFNESS MATRIX         =        0.04
+ TIME FOR SOLVING STIFFNESS MATRIX         =        1.34
+ TIME FOR CALCULATING DISPLACEMENTS        =        0.04
+ TIME FOR DETERMINING EVENTS               =        0.02
+ TIME FOR SAVING RESULTS                   =        0.02
+                                               ----------
+ TOTAL TIME FOR THIS ANALYSIS              =        3.30
+
+
+ E L E M E N T   F O R M A T I O N                                      11:00:21
+
+
+ NUMBER OF COUPLED CONSTRAINT EQUATIONS    =           0
+
+
+ L I N E A R   E Q U A T I O N   S O L U T I O N                        11:00:21
+
+ FORMING STIFFNESS AT THE END OF CASE: ~P-DELTA
+
+ TOTAL NUMBER OF EQUILIBRIUM EQUATIONS     =        9720
+ APPROXIMATE "EFFECTIVE" BAND WIDTH        =         222
+
+ NUMBER OF EQUATION STORAGE BLOCKS         =           1
+ MAXIMUM BLOCK SIZE (8-BYTE TERMS)         =     2141028
+ SIZE OF STIFFNESS FILE(S)                 =      16.372 MB
+
+ NUMBER OF EQUATIONS TO SOLVE              =        9720
+
+ ---------------------------------
+ BASIC STABILITY CHECK FOR LINEAR LOAD CASES:
+    NUMBER OF NEGATIVE STIFFNESS EIGENVALUES SHOULD BE ZERO FOR STABILITY.
+    (NOTE: FURTHER CHECKS SHOULD BE CONSIDERED AS DEEMED NECESSARY,
+     SUCH AS REVIEWING EIGEN MODES FOR MECHANISMS AND RIGID-BODY MOTION)
+
+    NUMBER OF NEGATIVE EIGENVALUES         =           0,  OK.
+ ---------------------------------
+
+
+ L I N E A R   S T A T I C   C A S E S                                  11:00:22
+
+ USING STIFFNESS AT THE END OF CASE: ~P-DELTA
+
+ TOTAL NUMBER OF CASES TO SOLVE            =           2
+ NUMBER OF CASES TO SOLVE PER BLOCK        =           2
+
+ LINEAR STATIC CASES TO BE SOLVED:
+
+ CASE: DEAD
+ CASE: ~LLRF
+
+
+ C E N T E R   O F   R I G I D I T Y  A N A L Y S I S                   11:00:22
+
+ CASE: ~CENTER OF RIGIDITY
+
+ USING STIFFNESS AT THE END OF CASE: ~P-DELTA
+
+ NUMBER OF LOADS                           =          48
+
+
+ Solving loads:       1 to      48
+ NUMBER OF LOADS SAVED                     =          48
+
+
+ E I G E N   M O D A L   A N A L Y S I S                                11:00:22
+
+ CASE: MODAL
+
+ USING STIFFNESS AT THE END OF CASE: ~P-DELTA
+
+ NUMBER OF STIFFNESS DEGREES OF FREEDOM    =        9720
+ NUMBER OF MASS DEGREES OF FREEDOM         =          48
+ MAXIMUM NUMBER OF EIGEN MODES SOUGHT      =          30
+ MINIMUM NUMBER OF EIGEN MODES SOUGHT      =          30
+ NUMBER OF RESIDUAL-MASS MODES SOUGHT      =           0
+ NUMBER OF SUBSPACE VECTORS USED           =          24
+ RELATIVE CONVERGENCE TOLERANCE            =    1.00E-07
+
+ FREQUENCY SHIFT  (CENTER) (CYC/TIME)      =     .000000
+ FREQUENCY CUTOFF (RADIUS) (CYC/TIME)      =  -INFINITY-
+ ALLOW AUTOMATIC FREQUENCY SHIFTING        =         YES
+
+
+ Original stiffness at shift : EV= 0.0000000E+00, f=     .000000, T=  -INFINITY-
+ Number of eigenvalues below shift =      0
+ Found mode      1 of     30:  EV= 1.6023322E+00, f=    0.201464, T=    4.963678
+ Found mode      2 of     30:  EV= 1.8664166E+00, f=    0.217432, T=    4.599129
+ Found mode      3 of     30:  EV= 3.7760786E+00, f=    0.309272, T=    3.233399
+ Found mode      4 of     30:  EV= 1.3629049E+01, f=    0.587561, T=    1.701951
+ Found mode      5 of     30:  EV= 1.6097268E+01, f=    0.638552, T=    1.566043
+ Found mode      6 of     30:  EV= 2.9101640E+01, f=    0.858576, T=    1.164719
+ Found mode      7 of     30:  EV= 4.2368779E+01, f=    1.035960, T=    0.965288
+ Found mode      8 of     30:  EV= 5.1943680E+01, f=    1.147061, T=    0.871793
+ Found mode      9 of     30:  EV= 8.9049820E+01, f=    1.501885, T=    0.665830
+ Found mode     10 of     30:  EV= 1.0212182E+02, f=    1.608346, T=    0.621757
+ Found mode     11 of     30:  EV= 1.2671277E+02, f=    1.791556, T=    0.558174
+ Found mode     12 of     30:  EV= 1.9775117E+02, f=    2.238101, T=    0.446807
+ Found mode     13 of     30:  EV= 2.1663476E+02, f=    2.342525, T=    0.426890
+ Found mode     14 of     30:  EV= 2.4578710E+02, f=    2.495167, T=    0.400775
+ Found mode     15 of     30:  EV= 3.1900914E+02, f=    2.842639, T=    0.351786
+ Found mode     16 of     30:  EV= 3.8048274E+02, f=    3.104471, T=    0.322116
+ Found mode     17 of     30:  EV= 4.2888169E+02, f=    3.296013, T=    0.303397
+ Found mode     18 of     30:  EV= 5.0188007E+02, f=    3.565497, T=    0.280466
+ Found mode     19 of     30:  EV= 6.0107336E+02, f=    3.901970, T=    0.256281
+ Found mode     20 of     30:  EV= 6.8259228E+02, f=    4.158156, T=    0.240491
+ Found mode     21 of     30:  EV= 8.1690168E+02, f=    4.548886, T=    0.219834
+ Found mode     22 of     30:  EV= 9.9996715E+02, f=    5.032839, T=    0.198695
+ Found mode     23 of     30:  EV= 1.0584773E+03, f=    5.177986, T=    0.193125
+ Found mode     24 of     30:  EV= 1.1977374E+03, f=    5.508089, T=    0.181551
+ Found mode     25 of     30:  EV= 1.4865202E+03, f=    6.136285, T=    0.162965
+ Found mode     26 of     30:  EV= 1.5443654E+03, f=    6.254537, T=    0.159884
+ Found mode     27 of     30:  EV= 1.6902020E+03, f=    6.543189, T=    0.152831
+ Found mode     28 of     30:  EV= 1.9130987E+03, f=    6.961275, T=    0.143652
+ Found mode     29 of     30:  EV= 2.3287951E+03, f=    7.680434, T=    0.130201
+ Found mode     30 of     30:  EV= 2.4130482E+03, f=    7.818134, T=    0.127908
+
+ NUMBER OF EIGEN MODES FOUND               =          30
+ NUMBER OF ITERATIONS PERFORMED            =          12
+ NUMBER OF STIFFNESS SHIFTS                =           0
+
+
+ A N A L Y S I S   C O M P L E T E                          2025/08/13  11:00:23

@@ -1,0 +1,5 @@
+numpy
+pandas
+comtypes
+xlwings
+shapely
