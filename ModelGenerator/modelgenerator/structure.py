@@ -47,7 +47,7 @@ class Structure:
                 ...["n_infill"] = 0 to 4
             
     """
-    def __init__(self, df_floors, x_grids, y_grids, df_SFRSbays, df_MF, df_braces, df_walls, model_options):
+    def __init__(self, df_floors, x_grids, y_grids, df_SFRSbays, df_MF, df_braces, df_walls, df_walls_openings, model_options):
         # input args
         self.df_floors = df_floors
         self.x_grids = x_grids
@@ -56,6 +56,7 @@ class Structure:
         self.df_MF = df_MF
         self.df_braces = df_braces
         self.df_walls = df_walls
+        self.df_walls_openings = df_walls_openings
         self.model_options = model_options
         
         # grids and elevations
@@ -109,6 +110,17 @@ class Structure:
             self.index_for_walls[f"on {xgrid}"] = []
         for ygrid in self.y_grids.keys():
             self.index_for_walls[f"on {ygrid}"] = []
+            
+        # Wall Openings
+        self.index_for_walls_opening = dict()
+        self.index_for_walls_opening["SFRS_wall_openingX"] = []
+        self.index_for_walls_opening["SFRS_wall_openingY"] = []
+        for floor in self.floor_names:
+            self.index_for_walls_opening[f"{floor}"] = []
+        for xgrid in self.x_grids.keys():
+            self.index_for_walls_opening[f"on {xgrid}"] = []
+        for ygrid in self.y_grids.keys():
+            self.index_for_walls_opening[f"on {ygrid}"] = []
         
         
         
@@ -402,7 +414,8 @@ class Structure:
         if self.df_walls is not None:
             print("\t Adding walls")
             self.add_walls(SapModel)
-        
+            
+    
         
     def add_MFs(self, SapModel):
         """
@@ -460,25 +473,29 @@ class Structure:
                             if frame_direction == "X":
                                 if frame_obj.frame_type == "column":
                                     frame_obj.frame_type = "SFRS_column"
-                                    frame_obj.change_section(SapModel, x_col)
-                                    self.index_for["SFRS_columnX"].append(uid)
+                                    if not pd.isna(x_col):
+                                        frame_obj.change_section(SapModel, x_col)
+                                        self.index_for["SFRS_columnX"].append(uid)
                                     
                                 elif frame_obj.frame_type == "girder":
                                     frame_obj.frame_type = "SFRS_beam"
-                                    frame_obj.change_section(SapModel, x_bm)
-                                    self.index_for["SFRS_beamX"].append(uid)
+                                    if not pd.isna(x_bm):
+                                        frame_obj.change_section(SapModel, x_bm)
+                                        self.index_for["SFRS_beamX"].append(uid)
                             
                             elif frame_direction == "Y":
                                 if frame_obj.frame_type == "column":
                                     frame_obj.frame_type = "SFRS_column"
-                                    frame_obj.change_section(SapModel, y_col)
-                                    frame_obj.rotate_axes(SapModel, angle=90)
-                                    self.index_for["SFRS_columnY"].append(uid)
+                                    if not pd.isna(y_col):
+                                        frame_obj.change_section(SapModel, y_col)
+                                        frame_obj.rotate_axes(SapModel, angle=90)
+                                        self.index_for["SFRS_columnY"].append(uid)
                                     
                                 elif frame_obj.frame_type == "beam": # y direction girders are bm sized and have type "beam"
                                     frame_obj.frame_type = "SFRS_beam"
-                                    frame_obj.change_section(SapModel, y_bm)
-                                    self.index_for["SFRS_beamY"].append(uid)
+                                    if not pd.isna(y_bm):
+                                        frame_obj.change_section(SapModel, y_bm)
+                                        self.index_for["SFRS_beamY"].append(uid)
                              
                                 
     def add_braces(self, SapModel):
@@ -528,29 +545,29 @@ class Structure:
                         brace_section = self.df_braces.loc[i,"y_brace"]
                         brace_config = self.df_braces.loc[i,"y_config"]
 
-                    # string parsing is hard with backslash (\), implemented a workaround here
-                    if "SingleA" in brace_config:
-                        brace_config = "SingleA"
-                    if "SingleB" in brace_config:
-                        brace_config = "SingleB"
-                        
-                    # select the correct brace generation function and call it
-                    brace_generation_func = brace_generator_funcs[brace_config]
-                    brace_generation_func(SapModel = SapModel,
-                                          floor_name = floor_name,
-                                          direction = frame_direction,
-                                          abscissa = abscissa,
-                                          ordinate_range = ordinate_range,
-                                          brace_section = brace_section,
-                                          z_current = z_current,
-                                          z_below = z_below,
-                                          ongrid = grid_on)
-                        
+                    if not pd.isna(brace_section):
+                        # string parsing is hard with backslash (\), implemented a workaround here
+                        if "SingleA" in brace_config:
+                            brace_config = "SingleA"
+                        if "SingleB" in brace_config:
+                            brace_config = "SingleB"
+                         # select the correct brace generation function and call it
+                        brace_generation_func = brace_generator_funcs[brace_config]
+                        brace_generation_func(SapModel = SapModel,
+                                              floor_name = floor_name,
+                                              direction = frame_direction,
+                                              abscissa = abscissa,
+                                              ordinate_range = ordinate_range,
+                                              brace_section = brace_section,
+                                              z_current = z_current,
+                                              z_below = z_below,
+                                              ongrid = grid_on)
+                                
     
     def add_walls(self, SapModel):
         """
-        Add wall elements. Algorithm is similar to add_braces except it is simpler, no need
-        to have logic for different brace configurations
+        Add wall elements. Algorithm is similar to add_braces except it is simpler,
+        no need to have logic for different brace configurations
         """
         N_stories = self.df_SFRSbays.shape[0]
         N_bays = self.df_SFRSbays.shape[1]
@@ -560,46 +577,55 @@ class Structure:
         for pier in pier_list:
             if pier != "P1":
                 ret = SapModel.PierLabel.Delete(pier)
-        
+                
         # loop from each floor from roof to base
         for i in tqdm(range(N_stories)):
             SapModel.View.RefreshView()
             floor_name = self.df_SFRSbays.loc[i, "floor_name"]
             z_current = self.df_floors.loc[i, "floor_elev"] * 12
             z_below = z_current - self.df_floors.loc[i, "floor_height"] * 12
-            x_wall = self.df_walls.loc[i,"x_wall"]
-            y_wall = self.df_walls.loc[i,"y_wall"]
+            x_wall = self.df_walls.loc[i, "x_wall"]
+            y_wall = self.df_walls.loc[i, "y_wall"]
             
             # loop through each SFRS bay entered by user
             for j in range(N_bays-1):
-                SFRS_string = self.df_SFRSbays.iloc[i, j+1] # +1 because first col is floor_name
+                SFRS_string = self.df_SFRSbays.iloc[i, j+1]  # +1 because first col is floor_name
                 if not pd.isna(SFRS_string):
+                    # check for wall opening
+                    cell = self.df_walls_openings.iloc[i, j]
+                    opening_vals = None
+                    if not pd.isna(cell):
+                        try:
+                            opening_vals = tuple(float(v) for v in str(cell).strip().strip("()").split(","))
+                        except Exception:
+                            opening_vals = None
+    
                     # parse string (e.g. 1;B-E)
-                    grid_on = SFRS_string.split(";")[0]
-                    grid_fromto = SFRS_string.split(";")[1]
-                    start = grid_fromto.split("-")[0]
-                    end = grid_fromto.split("-")[1]
+                    grid_on, grid_fromto = SFRS_string.split(";")
+                    start, end = grid_fromto.split("-")
                     pier_label = floor_name + "_" + SFRS_string
                     
-                    # generate walls
-                    if grid_on in self.x_grids:
+                    # generate X walls
+                    if not pd.isna(x_wall) and grid_on in self.x_grids:
                         wall_direction = "X"
                         abscissa = self.x_grids[grid_on]
-                        grid_range = [chr(x) for x in range(ord(start), ord(end) +1)]
+                        grid_range = [chr(x) for x in range(ord(start), ord(end) + 1)]
                         ordinate_range = [self.y_grids[x] for x in grid_range]
                         
                         for k in range(len(ordinate_range)-1):
-                            start = ordinate_range[k]
-                            end = ordinate_range[k+1]
-                            vertices = [(start, abscissa, z_current),
-                                        (end, abscissa, z_current),
-                                        (end, abscissa, z_below),
-                                        (start, abscissa, z_below)]
-                            wall_obj = modelgenerator.Wall(story = floor_name, 
-                                                           vertices = vertices, 
-                                                           section = x_wall, 
-                                                           wall_direction=wall_direction,
-                                                           pier_label = pier_label)
+                            start_ord = ordinate_range[k]
+                            end_ord = ordinate_range[k+1]
+                            vertices = [(start_ord, abscissa, z_current),
+                                        (end_ord,   abscissa, z_current),
+                                        (end_ord,   abscissa, z_below),
+                                        (start_ord, abscissa, z_below)]
+                            wall_obj = modelgenerator.Wall(
+                                story=floor_name, 
+                                vertices=vertices, 
+                                section=x_wall, 
+                                wall_direction=wall_direction,
+                                pier_label=pier_label
+                            )
                             wall_obj.add_by_coord(SapModel)
                             wall_obj.set_pier_label(SapModel)
                             
@@ -607,24 +633,45 @@ class Structure:
                             self.index_for_walls[floor_name].append(wall_obj.unique_name)
                             self.index_for_walls[f"on {grid_on}"].append(wall_obj.unique_name)
                             self.index_for_walls["SFRS_wallX"].append(wall_obj.unique_name)
-                    else:
-                        wall_direction = "Y" #e.g. A:3-7
+                            
+                            # add Wall Opening if present
+                            if opening_vals:
+                                L, B, W, H = opening_vals
+                                vertices = [(start_ord + L,     abscissa, z_below + B + H),
+                                            (start_ord + L + W, abscissa, z_below + B + H),
+                                            (start_ord + L + W, abscissa, z_below + B),
+                                            (start_ord + L,     abscissa, z_below + B)]
+                                wall_obj = modelgenerator.Wall(
+                                    story=floor_name, 
+                                    vertices=vertices, 
+                                    section="Opn", 
+                                    wall_direction=wall_direction,
+                                    pier_label="None"
+                                )
+                                wall_obj.add_by_coord(SapModel)
+                                wall_obj.convert_to_opening(SapModel)
+    
+                    # generate Y walls
+                    if not pd.isna(y_wall) and grid_on in self.y_grids:
+                        wall_direction = "Y"  # e.g. A:3-7
                         abscissa = self.y_grids[grid_on]
-                        grid_range = [str(x) for x in range(int(start),int(end)+1)]
+                        grid_range = [str(x) for x in range(int(start), int(end)+1)]
                         ordinate_range = [self.x_grids[x] for x in grid_range]
                         
                         for k in range(len(ordinate_range)-1):
-                            start = ordinate_range[k]
-                            end = ordinate_range[k+1]
-                            vertices = [(abscissa, start, z_current),
-                                        (abscissa, end, z_current),
-                                        (abscissa, end, z_below),
-                                        (abscissa, start, z_below)]
-                            wall_obj = modelgenerator.Wall(story = floor_name, 
-                                                           vertices = vertices, 
-                                                           section = y_wall, 
-                                                           wall_direction=wall_direction,
-                                                           pier_label = pier_label)
+                            start_ord = ordinate_range[k]
+                            end_ord = ordinate_range[k+1]
+                            vertices = [(abscissa, start_ord, z_current),
+                                        (abscissa, end_ord,   z_current),
+                                        (abscissa, end_ord,   z_below),
+                                        (abscissa, start_ord, z_below)]
+                            wall_obj = modelgenerator.Wall(
+                                story=floor_name, 
+                                vertices=vertices, 
+                                section=y_wall, 
+                                wall_direction=wall_direction,
+                                pier_label=pier_label
+                            )
                             wall_obj.add_by_coord(SapModel)
                             wall_obj.set_pier_label(SapModel)
                             
@@ -632,8 +679,24 @@ class Structure:
                             self.index_for_walls[floor_name].append(wall_obj.unique_name)
                             self.index_for_walls[f"on {grid_on}"].append(wall_obj.unique_name)
                             self.index_for_walls["SFRS_wallY"].append(wall_obj.unique_name)
-                        
-    
+                            
+                            # add Wall Opening if present
+                            if opening_vals:
+                                L, B, W, H = opening_vals
+                                vertices = [(abscissa, start_ord + L,     z_below + B + H),
+                                            (abscissa, start_ord + L + W, z_below + B + H),
+                                            (abscissa, start_ord + L + W, z_below + B),
+                                            (abscissa, start_ord + L,     z_below + B)]
+                                wall_obj = modelgenerator.Wall(
+                                    story=floor_name, 
+                                    vertices=vertices, 
+                                    section="Opn", 
+                                    wall_direction=wall_direction,
+                                    pier_label="None"
+                                )
+                                wall_obj.add_by_coord(SapModel)
+                                wall_obj.convert_to_opening(SapModel)
+                    
     def set_base_fixity(self, SapModel):
         """Set structural base nodes as fixed or pinned depending on user input"""
         # base is automatically pinned. Only need to execute if user wants fully fixed base

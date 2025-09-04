@@ -31,6 +31,13 @@ class Wall:
         if ret[-1] != 0:
             print(f"WARNING: failed to add wall shell: {self.unique_name} on {self.story}")
             
+    def convert_to_opening(self, SapModel):
+        #todo
+        ret = SapModel.AreaObj.SetOpening(Name = self.unique_name,
+                                          IsOpening = True)
+        if ret != 0:
+            print(f"WARNING: failed to convert to opening: {self.unique_name} on {self.story}")
+            
     def set_pier_label(self, SapModel):
         """Add this wall shell to pier group"""
         ret = SapModel.PierLabel.SetPier(self.pier_label)

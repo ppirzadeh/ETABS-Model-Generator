@@ -19,10 +19,10 @@ def main():
     input_sheet = workbook.sheets[INPUT_SHEET_NAME]
 
     # read user inputs
-    df_floors, x_grids, y_grids, df_SFRSbays, df_MF, df_braces, df_walls, model_options = read_user_input(input_sheet)
+    df_floors, x_grids, y_grids, df_SFRSbays, df_MF, df_braces, df_walls,df_walls_openings, model_options = read_user_input(input_sheet)
     
     # create structure object that holds all structural information
-    Structure = modelgenerator.Structure(df_floors, x_grids, y_grids, df_SFRSbays, df_MF, df_braces, df_walls, model_options)
+    Structure = modelgenerator.Structure(df_floors, x_grids, y_grids, df_SFRSbays, df_MF, df_braces, df_walls, df_walls_openings, model_options)
     
     # connect to ETABS API
     start_time = time.time()
@@ -98,7 +98,7 @@ def read_user_input(sheet):
     # moment frame members
     headers = ["x_column", "x_beam", "y_column", "y_beam"]
     df_MF = pd.DataFrame(sheet.range("T38:W73").value, columns = headers)
-    df_MF = df_MF.dropna(subset=["x_column"])
+    # df_MF = df_MF.dropna(subset=["x_column"])
     df_MF.reset_index(drop=True)
     if len(df_MF)==0:
         df_MF = None
@@ -106,7 +106,7 @@ def read_user_input(sheet):
     # brace members
     headers = ["x_brace", "x_config", "y_brace", "y_config"]
     df_braces = pd.DataFrame(sheet.range("Y38:AB73").value, columns = headers)
-    df_braces = df_braces.dropna(subset=["x_brace"])
+    # df_braces = df_braces.dropna(subset=["x_brace"])
     df_braces.reset_index(drop=True)
     if len(df_braces)==0:
         df_braces = None
@@ -114,10 +114,18 @@ def read_user_input(sheet):
     # wall members
     headers = ["x_wall", "y_wall"]
     df_walls = pd.DataFrame(sheet.range("AD38:AE73").value, columns = headers)
-    df_walls = df_walls.dropna(subset=["x_wall"])
+    # df_walls = df_walls.dropna(subset=["x_wall"])
     df_walls.reset_index(drop=True)
     if len(df_walls)==0:
         df_walls = None
+    
+    # wall openings
+    headers = ["bay_1_O", "bay_2_O", "bay_3_O", "bay_4_O", "bay_5_O", "bay_6_O", "bay_7_O", "bay_8_O", "bay_9_O", "bay_10_O", "bay_11_O", "bay_12_O", "bay_13_O", "bay_14_O", "bay_15_O"]
+    df_walls_openings = pd.DataFrame(sheet.range("AG38:AU73").value, columns = headers)
+    #df_walls_openings = df_walls.dropna(subset=["bay_1_O"])
+    df_walls_openings.reset_index(drop=True)
+    if len(df_walls_openings)==0:
+        df_walls_openings = None
     
     # other model options
     model_options = dict()
@@ -126,7 +134,7 @@ def read_user_input(sheet):
     model_options["enable_REZ"] = sheet.range('F78').value
     model_options["n_infill"] = int(sheet.range('F79').value)
     
-    return df_floors, x_grids, y_grids, df_SFRSbays, df_MF, df_braces, df_walls, model_options
+    return df_floors, x_grids, y_grids, df_SFRSbays, df_MF, df_braces, df_walls, df_walls_openings, model_options
 
 
 
